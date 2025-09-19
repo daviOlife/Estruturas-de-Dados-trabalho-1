@@ -1,0 +1,73 @@
+use std::collections::LinkedList;
+
+struct GerenciadorTarefas {
+    tarefas: LinkedList<String>,
+}
+
+impl GerenciadorTarefas {
+    fn novo() -> Self {
+        GerenciadorTarefas {
+            tarefas: LinkedList::new(),
+        }
+    }
+
+    fn adicionar(&mut self, tarefa: &str) {
+        self.tarefas.push_back(tarefa.to_string());
+        println!("Tarefa adicionada: {}", tarefa);
+    }
+
+    fn adicionar_no_inicio(&mut self, tarefa: &str) {
+        self.tarefas.push_front(tarefa.to_string());
+        println!("Tarefa adicionada no início: {}", tarefa);
+    }
+
+    fn remover_primeira(&mut self) {
+        match self.tarefas.pop_front() {
+            Some(t) => println!("Tarefa removida do início: {}", t),
+            None => println!("Nenhuma tarefa para remover no início."),
+        }
+    }
+
+    fn remover_ultima(&mut self) {
+        match self.tarefas.pop_back() {
+            Some(t) => println!("Tarefa removida do final: {}", t),
+            None => println!("Nenhuma tarefa para remover no final."),
+        }
+    }
+
+    fn listar(&self) {
+        if self.tarefas.is_empty() {
+            println!("Nenhuma tarefa cadastrada.");
+        } else {
+            println!("=== LISTA DE TAREFAS ===");
+            for (i, t) in self.tarefas.iter().enumerate() {
+                println!("{} - {}", i + 1, t);
+            }
+        }
+    }
+
+    fn esta_vazia(&self) -> bool {
+        self.tarefas.is_empty()
+    }
+
+    fn total(&self) -> usize {
+        self.tarefas.len()
+    }
+}
+
+fn main() {
+    let mut gerenciador = GerenciadorTarefas::novo();
+
+    gerenciador.adicionar("Estudar Rust");
+    gerenciador.adicionar("Revisar código");
+    gerenciador.adicionar_no_inicio("Checar e-mails");
+    gerenciador.listar();
+
+    println!("\nRemovendo do início e do final...");
+    gerenciador.remover_primeira();
+    gerenciador.remover_ultima();
+    gerenciador.listar();
+
+    println!("\nTotal de tarefas restantes: {}", gerenciador.total());
+    println!("Lista está vazia? {}\n", gerenciador.esta_vazia());
+}
