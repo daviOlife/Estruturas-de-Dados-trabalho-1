@@ -1,0 +1,71 @@
+///SISTEMA DE CADASTRO SIMPLES DE ALUNOS
+
+use std::collections::HashMap;
+
+struct CadastroAlunos {
+
+    notas: HashMap<String, f32>,
+}
+
+impl CadastroAlunos {
+
+    fn novo() -> Self {
+        CadastroAlunos {
+            notas: HashMap::new(),
+        }
+    }
+
+    fn adicionar_ou_atualizar(&mut self, nome: &str, nota: f32) {
+        self.notas.insert(nome.to_string(), nota);
+        println!("Nota de {} registrada/atualizada para {}", nome, nota);
+    }
+
+    fn remover(&mut self, nome: &str) {
+        match self.notas.remove(nome) {
+            Some(_) => println!("Aluno '{}' removido.", nome),
+            None => println!("Aluno '{}' não encontrado.", nome),
+        }
+    }
+
+    fn consultar(&self, nome: &str) {
+        match self.notas.get(nome) {
+            Some(&n) => println!("Nota de {}: {}", nome, n),
+            None => println!("Aluno '{}' não encontrado.", nome),
+        }
+    }
+
+    fn listar_todos(&self) {
+        if self.notas.is_empty() {
+            println!("Nenhum aluno cadastrado.");
+        } else {
+            println!("=== LISTA DE ALUNOS ===");
+            for (nome, nota) in &self.notas {
+                println!("{} -> {}", nome, nota);
+            }
+        }
+    }
+
+    fn total(&self) -> usize {
+        self.notas.len()
+    }
+}
+
+fn main() {
+    let mut cadastro = CadastroAlunos::novo();
+
+    cadastro.adicionar_ou_atualizar("Davi", 8.5);
+    cadastro.adicionar_ou_atualizar("Pedro", 7.2);
+    cadastro.adicionar_ou_atualizar("Ian", 9.1);
+
+    cadastro.consultar("Pedro");
+
+    println!("\nAtualizando nota de Davi...");
+    cadastro.adicionar_ou_atualizar("Davi", 9.0);
+
+    cadastro.listar_todos();
+    println!("\nTotal de alunos: {}", cadastro.total());
+
+    println!("\nRemovendo Pedro...");
+    cadastro.remover("Pedro");
+    cadastro.listar_todos();
+}
