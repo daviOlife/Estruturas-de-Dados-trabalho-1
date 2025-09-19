@@ -1,0 +1,83 @@
+/// SISTEMA DE EDIÇÃO DE NOTAS DE REUNIÃO
+
+#[derive(Clone, Debug)]
+struct AtaReuniao {
+    texto: String,
+    undo_stack: Vec<String>,
+    redo_stack: Vec<String>,
+}
+
+impl AtaReuniao {
+
+    fn nova() -> Self {
+        AtaReuniao {
+            texto: String::new(),
+            undo_stack: Vec::new(),
+            redo_stack: Vec::new(),
+        }
+    }
+
+    fn adicionar_anotacao(&mut self, anotacao: &str) {
+        self.salvar_estado();
+        self.texto.push_str(anotacao);
+        self.texto.push('\n'); // cada anotação em nova linha
+        self.redo_stack.clear();
+    }
+
+    fn remover_ultima_anotacao(&mut self) {
+        if let Some(pos) = self.texto.trim_end().rfind('\n') {
+            self.salvar_estado();
+            self.texto.truncate(pos + 1);
+            self.redo_stack.clear();
+        } else {
+            // só havia uma linha ou está vazio
+            self.salvar_estado();
+            self.texto.clear();
+            self.redo_stack.clear();
+        }
+    }
+
+    fn desfazer(&mut self) {
+        if let Some(estado) = self.undo_stack.pop() {
+            self.redo_stack.push(self.texto.clone());
+            self.texto = estado;
+        }
+    }
+
+    fn refazer(&mut self) {
+        if let Some(estado) = self.redo_stack.pop() {
+            self.undo_stack.push(self.texto.clone());
+            self.texto = estado;
+        }
+    }
+
+    fn salvar_estado(&mut self) {
+        self.undo_stack.push(self.texto.clone());
+    }
+
+    fn exibir(&self) {
+        println!("=== ATA DE REUNIÃO ===\n{}", self.texto);
+    }
+}
+
+fn main() {
+    let mut ata = AtaReuniao::nova();
+
+    // Secretário começa a digitar as anotações da reunião
+    ata.adicionar_anotacao("A reunião começou às 10h.");
+    ata.adicionar_anotacao("Presentes: Davi, Ian e Pedro.");
+    ata.adicionar_anotacao("Decisão: Aprovar o orçamento de 2026.");
+    ata.exibir();
+
+    println!("\n--- Opa! A última anotação estava incorreta, desfazendo...");
+    ata.desfazer();
+    ata.exibir();
+
+    println!("\n--- Secretário confirma que estava correta, refazendo...");
+    ata.refazer();
+    ata.exibir();
+
+    println!("\n--- Removendo a primeira anotação...");
+    ata.remover_ultima_anotacao();
+    ata.exibir();
+}
